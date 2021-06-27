@@ -1,0 +1,13 @@
+README.md
+setup.cfg
+setup.py
+data/pokemon.json
+src/poke_server/__init__.py
+src/poke_server/main.py
+src/poke_server.egg-info/PKG-INFO
+src/poke_server.egg-info/SOURCES.txt
+src/poke_server.egg-info/dependency_links.txt
+src/poke_server.egg-info/entry_points.txt
+src/poke_server.egg-info/top_level.txt
+src/poke_server/http/__init__.py
+src/poke_server/http/server.py
