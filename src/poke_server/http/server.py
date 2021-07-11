@@ -55,21 +55,4 @@ class PokeHTTPRequestHandler(BaseHTTPRequestHandler):
             self.send_http_response(response, 200)
 
     def do_POST(self):
-        parsed_url = urlparse(self.path)
-        logger.info(f"parsed request url: {self.path} -> {parsed_url}")
-
-        route_handler = self._router.route("POST", parsed_url.path)
-        query_params = parse_qs(parsed_url.query)
-        if 'Content-Length' in self.headers:
-            body_length = int(self.headers.get('Content-Length', 0))
-            if body_length > 0:
-                req_body = self.rfile.read(body_length).decode("utf-8")
-                logger.info(f"request body length: {len(req_body)}")
-                logger.info(f"executing handler: {route_handler}")
-                body_params = parse_qs(req_body)
-
-                route_handler(
-                self.send_http_response({"body": req_body}, 200)
-                return
-
         self.send_http_response("internal error", 500)
