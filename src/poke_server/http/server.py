@@ -10,6 +10,13 @@ from logging import (
     getLogger,
     INFO
 )
+from re import fullmatch
+from urllib.parse import (
+    parse_qs,
+    urlparse
+)
+
+from poke_server.http.router import HTTPRouter
 
 basicConfig(
     level=INFO,
@@ -17,57 +24,52 @@ basicConfig(
 )
 logger = getLogger(__name__)
 
-POKEMON_JSON_DB = "/var/lib/poke_server/pokemon.json"
+POKEMON_JSON_DB = "./data/pokemon.json"
 
 class PokeHTTPRequestHandler(BaseHTTPRequestHandler):
-    def response_json(self, response):
-        self.send_response(200);
-        self.send_header(
-            "Content-Type", "text/plain; charset=utf-8"
-        )
-        self.send_header(
-            "Access-Control-Allow-Origin", "*"
-        )
+    _router = HTTPRouter()
+
+    def send_headers(self):
+        self.send_header("Content-Type", "text/plain; charset=utf-8")
+        self.send_header("Access-Control-Allow-Origin", "*")
         self.end_headers()
-        self.wfile.write(dumps(response).encode("utf-8"))
+
+    def send_http_response(self, response, response_code=200):
+        self.send_response(response_code)
+        self.send_headers()
+        self.wfile.write(dumps(response, default=lambda o: o.__dict__).encode("utf-8"))
         
     def do_GET(self):
-        # poke-back.hq.akdev.xyz:8081/pokemon/${id}
+        matching_routes = [
+            route
+            for route in self._router.get_routes("GET")
+            if route.path == self.path
+        ]
+        logger.info(f"found {len(matching_routes)} matching routes")
 
-        # 1. read pokemon.json file
-        # 2. search for pokemon id == pokemon_id
-        # 3. return json.dumps(pokemon_found)
-
-
-        if "/pokemon" in self.path:
-            pokemon_request_id = int(self.path.split("/")[-1])
-            logger.info(f"processing pokemon ID: {pokemon_request_id}")
-            with open(POKEMON_JSON_DB) as pokemon_db:
-                pokemons = load(pokemon_db)
-                logger.info(f"found {len(pokemons)} pokemons")
-                logger.info(f"pokemon_request_id = {pokemon_request_id}")
-                pokemon_found = [
-                    pokemon
-                    for pokemon in pokemons
-                    if pokemon["id"] == pokemon_request_id
-                ]
-                if len(pokemon_found) > 0:
-                    logger.info(f"found {len(pokemon_found)} pokemons with id {pokemon_request_id}")
-                    self.send_response(200);
-                    self.send_header(
-                        "Content-Type", "text/plain; charset=utf-8"
-                    )
-                    self.send_header(
-                        "Access-Control-Allow-Origin", "*"
-                    )
-                    self.end_headers()
-                    self.wfile.write(dumps(pokemon_found[0]).encode("utf-8"))
-                else:
-                    logger.warning(f"pokemon not found with id {pokemon_request_id}")
-                    self.send_response(404);
-
+        if len(matching_routes) == 0:
+            logger.warning(f"route not found: GET - {self.path}")
+            self.send_http_response({"path": self.path, "error": 404}, 404)
         else:
-            self.send_response(404);
-                    
+            response = matching_routes[0].handler(self.path, {})
+            self.send_http_response(response, 200)
 
-        
+    def do_POST(self):
+        parsed_url = urlparse(self.path)
+        logger.info(f"parsed request url: {self.path} -> {parsed_url}")
+
+        route_handler = self._router.route("POST", parsed_url.path)
+        query_params = parse_qs(parsed_url.query)
+        if 'Content-Length' in self.headers:
+            body_length = int(self.headers.get('Content-Length', 0))
+            if body_length > 0:
+                req_body = self.rfile.read(body_length).decode("utf-8")
+                logger.info(f"request body length: {len(req_body)}")
+                logger.info(f"executing handler: {route_handler}")
+                body_params = parse_qs(req_body)
+
+                route_handler(
+                self.send_http_response({"body": req_body}, 200)
+                return
+
+        self.send_http_response("internal error", 500)
