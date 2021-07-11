@@ -60,5 +60,5 @@ class HTTPRouter:
     def post(self, path, handler):
         self._register("POST", path, handler)
 
-    #def get_routes(self, method):
-    #    return self._routes[method]
+    def get_routes(self, method):
+        return self._routes[method]
