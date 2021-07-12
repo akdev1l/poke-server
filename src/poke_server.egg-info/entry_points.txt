@@ -1,3 +1,0 @@
-[console_scripts]
-poke-server = poke_server.main:main
-
