@@ -1,3 +1,4 @@
 dist
 build
 *.whl
+src/poke_server.egg-info/

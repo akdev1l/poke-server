@@ -1,30 +1,16 @@
-from http.server import (
-    BaseHTTPRequestHandler
-)
-from json import (
-    load,
-    dumps
-)
-from logging import (
-    basicConfig,
-    getLogger,
-    INFO
-)
+from http.server import BaseHTTPRequestHandler
+from json import load, dumps
+from logging import basicConfig, getLogger, INFO
 from re import fullmatch
-from urllib.parse import (
-    parse_qs,
-    urlparse
-)
+from urllib.parse import parse_qs, urlparse
 
 from poke_server.http.router import HTTPRouter
 
-basicConfig(
-    level=INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+basicConfig(level=INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = getLogger(__name__)
 
 POKEMON_JSON_DB = "./data/pokemon.json"
+
 
 class PokeHTTPRequestHandler(BaseHTTPRequestHandler):
     _router = HTTPRouter()
@@ -38,12 +24,10 @@ class PokeHTTPRequestHandler(BaseHTTPRequestHandler):
         self.send_response(response_code)
         self.send_headers()
         self.wfile.write(dumps(response, default=lambda o: o.__dict__).encode("utf-8"))
-        
+
     def do_GET(self):
         matching_routes = [
-            route
-            for route in self._router.get_routes("GET")
-            if route.path == self.path
+            route for route in self._router.get_routes("GET") if route.path == self.path
         ]
         logger.info(f"found {len(matching_routes)} matching routes")
 

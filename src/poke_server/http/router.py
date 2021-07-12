@@ -7,10 +7,12 @@ from sys import exit
 
 logger = getLogger(__name__)
 
+
 class HTTPResponse:
     def __init__(self, payload, return_code=200):
         self.payload = payload
         self.return_code = return_code
+
 
 # class HTTPHandler:
 #    @staticmethod
@@ -21,6 +23,7 @@ class HTTPResponse:
 #            404
 #        )
 
+
 class HTTPRoute:
     def __init__(self, path, handler):
         self.path = path
@@ -30,7 +33,7 @@ class HTTPRoute:
 class HTTPRouter:
     def __init__(self):
         self._routes = {
-            "GET": [], # /pokemon/1, /pokemon/1
+            "GET": [],  # /pokemon/1, /pokemon/1
             "POST": [],
             "PUT": [],
             "PATCH": [],
@@ -39,7 +42,6 @@ class HTTPRouter:
 
     def _register(self, method, path, handler):
         new_route = HTTPRoute(path, handler)
-
 
         if any(route.path == new_route.path for route in self._routes[method]):
             logger.error("found duplicate route at: {method} -> {new_route.path}")
@@ -50,7 +52,7 @@ class HTTPRouter:
     def route(self, method, path):
         for http_route in self._routes[method]:
             if http_route.path == path:
-            #if route_match := fullmatch(http_route.path, path):
+                # if route_match := fullmatch(http_route.path, path):
                 return http_route.handler
         # if not found ?
 

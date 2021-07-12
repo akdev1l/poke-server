@@ -2,36 +2,26 @@
 
 from logging import getLogger
 
-from poke_server.http.router import (
-    HTTPResponse
-)
+from poke_server.http.router import HTTPResponse
 
 logger = getLogger(__name__)
 
+
 class PokeHandler:
     @classmethod
-    def index(cls, path, body): # PokeHandler.index("/", "{}")
+    def index(cls, path, body):  # PokeHandler.index("/", "{}")
         logger.info("poke-handler executing")
-        return HTTPResponse(
-            "hello poke",
-            200
-        )
+        return HTTPResponse("hello poke", 200)
 
     @classmethod
-    def get_pokemon(cls, path, body): # PokeHandler.get_pokemon("/pokemon/1", "{}") => HTTPResponse
+    def get_pokemon(cls, path, body):
         logger.info("fetching pokemon")
-        return HTTPResponse(
-            {"id": 1 },
-            200
-        )
+        return HTTPResponse({"id": 1}, 200)
 
     @classmethod
     def update_pokemon(cls, path, body):
         logger.info("updating pokemon")
-        return HTTPResponse(
-            {"id": 1},
-            200
-        )
+        return HTTPResponse({"id": 1}, 200)
 
     @classmethod
     def get_and_update_pokemon(cls, path, body):
