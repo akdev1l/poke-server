@@ -1,0 +1,12 @@
+[Install]
+WantedBy=network-online.target
+
+[Unit]
+Description=poke-server
+
+[Service]
+ExecStart=/usr/bin/poke-server
+User=poke-server
+Group=poke-server
+WorkingDirectory=/var/lib/poke_server
+Restart=Always
