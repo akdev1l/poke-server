@@ -1,0 +1,21 @@
+digraph PokeDB {
+    rankdir=LR;
+    node [shape=none];
+
+    pokemon[label=<
+<TABLE>
+    <TR><TD BGCOLOR="lightgray">POKEMONS</TD></TR>
+    <TR><TD port="id"><B>id</B></TD></TR>
+    <TR><TD port="name">name</TD></TR>
+    <TR><TD port="species_id">species_id</TD></TR>
+</TABLE>>];
+
+    species[label=<
+<TABLE>
+    <TR><TD BGCOLOR="lightgray">SPECIES</TD></TR>
+    <TR><TD PORT="id"><B>id</B></TD></TR>
+    <TR><TD>name</TD></TR>
+</TABLE>>];
+
+    pokemon:species_id -> species:id;
+}
